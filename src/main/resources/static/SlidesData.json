@@ -1,0 +1,34 @@
+[
+  {
+    "id":1,
+    "name":"Aperio",
+    "isProcessed": false,
+    "status": null,
+    "decision": null,
+    "score": null
+  },
+  {
+    "id":2,
+    "name":"DICOM",
+    "isProcessed": false,
+    "status": null,
+    "decision": null,
+    "score": null
+  },
+  {
+    "id":3,
+    "name":"Generic-TIFF",
+    "isProcessed": false,
+    "status": null,
+    "decision": null,
+    "score": null
+  },
+  {
+    "id":4,
+    "name":"Hamamatsu",
+    "isProcessed": false,
+    "status": null,
+    "decision": null,
+    "score": null
+  }
+]
