@@ -1,12 +1,18 @@
 package com.demo.lunit.services;
 
 import com.demo.lunit.entities.Slide;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import java.util.List;
 import java.util.Optional;
 
 public interface SlideService {
-    List<Slide> findAllSlide();
+    Page<Slide> findAllSlide(Pageable pageable);
+
+    Page<Slide> findAllSlideByUserId(Long userId, Pageable pageable);
     Optional<Slide> findById(Long id);
+    Optional<Slide> findSlideByUserIdAndSlideId(Long userId, Long slideId);
     Slide insert(Slide slide);
     List<Slide> insertAll(List<Slide> slides);
     void deleteById(Long id);

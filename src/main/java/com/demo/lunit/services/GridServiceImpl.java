@@ -3,6 +3,8 @@ package com.demo.lunit.services;
 import com.demo.lunit.entities.Grid;
 import com.demo.lunit.respositories.GridRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,8 +16,8 @@ public class GridServiceImpl implements GridService {
     private GridRepository gridRepository;
 
     @Override
-    public List<Grid> findAllGrid() { //public Iterable<Grid> findAllGrids() {
-        return this.gridRepository.findAll();
+    public Page<Grid> findAllGrid(Pageable pageable) { //public Iterable<Grid> findAllGrids() {
+        return this.gridRepository.findAll(pageable);
     }
 
     @Override

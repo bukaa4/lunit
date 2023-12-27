@@ -1,7 +1,6 @@
 [
   {
     "id":1,
-    "fileId": 1,
     "intratumoral_min":1,
     "intratumoral_avg":34,
     "intratumoral_max":658.6,
@@ -11,7 +10,6 @@
   },
   {
     "id":2,
-    "fileId": 1,
     "intratumoral_min":1,
     "intratumoral_avg":34,
     "intratumoral_max":658.6,
@@ -21,7 +19,6 @@
   },
   {
     "id":3,
-    "fileId": 1,
     "intratumoral_min":1,
     "intratumoral_avg":34,
     "intratumoral_max":658.6,
@@ -31,7 +28,6 @@
   },
   {
     "id":4,
-    "fileId": 1,
     "intratumoral_min":1,
     "intratumoral_avg":34,
     "intratumoral_max":658.6,
@@ -41,7 +37,6 @@
   },
   {
     "id":5,
-    "fileId": 2,
     "intratumoral_min":1,
     "intratumoral_avg":34,
     "intratumoral_max":658.6,
@@ -51,7 +46,6 @@
   },
   {
     "id":6,
-    "fileId": 2,
     "intratumoral_min":1,
     "intratumoral_avg":34,
     "intratumoral_max":658.6,
@@ -61,7 +55,6 @@
   },
   {
     "id":7,
-    "fileId": 2,
     "intratumoral_min":1,
     "intratumoral_avg":34,
     "intratumoral_max":658.6,
@@ -71,7 +64,6 @@
   },
   {
     "id":8,
-    "fileId": 2,
     "intratumoral_min":1,
     "intratumoral_avg":34,
     "intratumoral_max":658.6,

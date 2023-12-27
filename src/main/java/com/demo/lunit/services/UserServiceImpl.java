@@ -5,6 +5,8 @@ import com.demo.lunit.respositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,8 +16,8 @@ public class UserServiceImpl implements  UserService {
     private UserRepository userRepository;
 
     @Override
-    public List<User> findAllUser() { //public Iterable<User> findAllUsers() {
-        return this.userRepository.findAll();
+    public Page<User> findAllUser(Pageable pageable) { //public Iterable<User> findAllUsers() {
+        return this.userRepository.findAll(pageable);
     }
 
     @Override
@@ -35,11 +37,18 @@ public class UserServiceImpl implements  UserService {
 
     @Override
     public void deleteById(Long id) {
+
+        //TODO:findONe and delet
         this.userRepository.deleteById(id);
     }
 
     @Override
     public User update(User user) {
         return this.userRepository.save(user);
+    }
+
+    @Override
+    public Page<User> findAllUsersWithEmail(String email, Pageable pageable) {
+        return this.userRepository.findAllUsersWithEmail(email, pageable);
     }
 }

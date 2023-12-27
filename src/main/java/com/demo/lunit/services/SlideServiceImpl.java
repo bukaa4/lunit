@@ -3,6 +3,8 @@ package com.demo.lunit.services;
 import com.demo.lunit.entities.Slide;
 import com.demo.lunit.respositories.SlideRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,13 +17,23 @@ public class SlideServiceImpl implements  SlideService {
     private SlideRepository slideRepository;
 
     @Override
-    public List<Slide> findAllSlide() { //public Iterable<Slide> findAllSlides() {
-        return this.slideRepository.findAll();
+    public Page<Slide> findAllSlide(Pageable pageable) {
+        return this.slideRepository.findAll(pageable);
+    }
+
+    @Override
+    public Page<Slide> findAllSlideByUserId(Long userId, Pageable pageable) {
+        return this.slideRepository.findAllSlidesByUserId(userId, pageable);
     }
 
     @Override
     public Optional<Slide> findById(Long id) {
         return this.slideRepository.findById(id);
+    }
+
+    @Override
+    public Optional<Slide> findSlideByUserIdAndSlideId(Long userId, Long slideId) {
+        return this.slideRepository.findSlideByUserIdAndSlideId(userId, slideId);
     }
 
     @Override
