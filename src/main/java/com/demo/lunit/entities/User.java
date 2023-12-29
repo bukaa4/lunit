@@ -1,75 +1,37 @@
 package com.demo.lunit.entities;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Entity
 @Table(name = "users")
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
     @Id
     @Column(name="id")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
     @Column(name="name")
     private String name;
 
-    @Column(name="username")
+    @Column(name="username", nullable = false, unique = true)
     private String username;
+
+    @Column(name="password")
+    private String password;
 
     @Column(name="email")
     private String email;
 
     @Column(name="phone")
     private String phone;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-    protected User(){
-
-    }
-    public User(Long id, String name, String username, String email, String phone) {
-        this.id = id;
-        this.name = name;
-        this.username = username;
-        this.email = email;
-        this.phone = phone;
-    }
 }

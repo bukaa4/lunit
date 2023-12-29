@@ -13,10 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+
+import java.util.*;
 
 @RestController
 public class SlideController {
@@ -27,82 +25,109 @@ public class SlideController {
     @Autowired
     private AiClient aiClient;
 
-    @GetMapping("/slides")
-    public ResponseEntity<Map<String, Object>> findAllSlides(@RequestParam(defaultValue = "0") int page,
-                                                             @RequestParam(defaultValue = "3") int size) {
+    @GetMapping(value = {"/users/{userId}/slides"})
+    public ResponseEntity<Map<String, Object>> getAllSlidesOfUser(@PathVariable Long userId,
+                                                                 @RequestParam(required = false) Long slideId,
+                                                                 @RequestParam(defaultValue = "0") int page,
+                                                                 @RequestParam(defaultValue = "3") int size) {
         try {
             Pageable paging = PageRequest.of(page, size);
             List<Slide> slides = null;
-            Page<Slide> pageSlides = slideService.findAllSlide(paging);
+            Page<Slide> pageSlides = null;
+            if (userId != null && slideId != null) {
+                Optional<Slide> slide;
+                slide = slideService.findSlideByUserIdAndSlideId(userId, slideId);
+                if(slide.isPresent()){
+                    slides = new ArrayList<>();
+                    slides.add(slide.get());
+                }
+
+            } else if(userId != null) {
+                pageSlides = slideService.findAllSlideByUserId(userId, paging);
+            }
 
             Map<String, Object> response = new HashMap<>();
+            response.put("currentPage", pageSlides.getNumber());
+            response.put("totalItems", pageSlides.getTotalElements());
+            response.put("totalPages", pageSlides.getTotalPages());
             if (pageSlides != null) {
                 slides = pageSlides.getContent();
-                response.put("currentPage", pageSlides.getNumber());
-                response.put("totalItems", pageSlides.getTotalElements());
-                response.put("totalPages", pageSlides.getTotalPages());
+                response.put("slides", slides);
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
             }
-            response.put("slides", slides);
-
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-    @GetMapping("/slides/{id}")
-    public ResponseEntity<Slide> findOneSlide(@PathVariable Long id) {
-        Optional<Slide> slideData = slideService.findById(id);
-
-		if (slideData.isPresent()) {
-			return new ResponseEntity<>(slideData.get(), HttpStatus.OK);
-		} else {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-    }
-    @PostMapping("/slide")
-    public ResponseEntity<Slide> addOneSlide(@RequestBody Slide slide) {
-        try {
-            Slide _slide = slideService.insert(slide);
-            return new ResponseEntity<>(_slide, HttpStatus.CREATED);
-
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @PostMapping("/slide/getAnalysis")
-    public ResponseEntity<Object> sendRequestToAIClient(@RequestBody Slide slide) {
+    @PutMapping("/users/{userId}/slides/getAnalysis")
+    public ResponseEntity<Object> sendRequestToAIClient(@PathVariable Long userId,
+                                                        @RequestBody List<Slide> slides) {
         try {
-            List<Grid> grids = aiClient.doAnalysis(slide);
-            //if(grids == null) {
-            if(true){
-                slide.setDecision(0);
-                slide.setScore(0.0);
-                slide.setStatus(Status.FAILED);
-                return new ResponseEntity<>("ERROR: AI analysis is failed.", HttpStatus.BAD_REQUEST);
+            List<Slide> result = aiClient.doAnalysis(slides, userId);
+
+            if(result == null || result.size() == 0) {
+            //if(true){
+                return new ResponseEntity<>("AI analysis is failed.", HttpStatus.BAD_REQUEST);
 
             } else {
-                slide.setDecision(1);
-                slide.setScore(86.0);
-                slide.setStatus(Status.COMPLETED);
-                //slide.setGrids(grids);
+                //TODO:return slides instead of GRIDs.
+                return new ResponseEntity<>(result, HttpStatus.OK);
             }
-            slide = slideService.update(slide);
-            return new ResponseEntity<>(slide, HttpStatus.OK);
-
         } catch(Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @PostMapping("/slides")
-    public ResponseEntity<List<Slide>> addBulkSlide(@RequestBody List<Slide> slides) {
+    @PostMapping("/users/{userId}/slides/upload")
+    public ResponseEntity<List<Slide>> uploadSlides(@PathVariable Long userId,
+                                                    @RequestBody List<Slide> slides) {
         try {
+            slides.forEach(slide -> {
+                slide.setUserId(userId);
+            });
             List<Slide> _slides = slideService.insertAll(slides);
             if (_slides.size() > 0) {
                 return new ResponseEntity<>(_slides, HttpStatus.OK);
             } else {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping(value = {"/users/{userId}/slides/requestHistory"})
+    public ResponseEntity<Map<String, Object>> getAllRequestedSlidesOfUser(@PathVariable Long userId,
+                                                                  @RequestParam(required = false) Long slideId,
+                                                                  @RequestParam(defaultValue = "0") int page,
+                                                                  @RequestParam(defaultValue = "3") int size) {
+        try {
+            Pageable paging = PageRequest.of(page, size);
+            List<Slide> slides = null;
+            Page<Slide> pageSlides = null;
+            if(userId != null && slideId != null) {
+                Optional<Slide> dbSlide = slideService.findSlideByUserIdAndSlideId(userId, slideId);
+                if(dbSlide.isPresent() && dbSlide.get().getStatus() != Status.NONE){
+                    slides.add(dbSlide.get());
+                }
+            }
+            if(userId != null) {
+                pageSlides = slideService.findCompletedSlideByUserIdAndSlideId(userId, paging);
+            }
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("currentPage", pageSlides.getNumber());
+            response.put("totalItems", pageSlides.getTotalElements());
+            response.put("totalPages", pageSlides.getTotalPages());
+            if (pageSlides != null) {
+                slides = pageSlides.getContent();
+                response.put("slides", slides);
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
             }
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);

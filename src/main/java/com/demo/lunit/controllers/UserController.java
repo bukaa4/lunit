@@ -12,8 +12,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 public class UserController {
@@ -25,28 +28,30 @@ public class UserController {
     private SlideService slideService;
 
     @GetMapping("/users")
-    public ResponseEntity<Map<String, Object>> findAllUsers(@RequestParam(required = false) String email,
+    public ResponseEntity<Map<String, Object>> getAllUsers(@RequestParam(required = false) String username,
                                                             @RequestParam(defaultValue = "0") int page,
                                                             @RequestParam(defaultValue = "3") int size) {
         try {
             Pageable paging = PageRequest.of(page, size);
             List<User> users = null;
-            Page<User> pageUsers = null;
-            if (StringUtils.isNoneEmpty(email)) {
-                pageUsers = userService.findAllUsersWithEmail(email, paging);
+            Page<User> pageUsers;
+            if (StringUtils.isNoneEmpty(username)) {
+                pageUsers = userService.findAllUsersWithUsername(username, paging);
             } else {
                 pageUsers = userService.findAllUser(paging);
             }
             Map<String, Object> response = new HashMap<>();
+            response.put("currentPage", pageUsers.getNumber());
+            response.put("totalItems", pageUsers.getTotalElements());
+            response.put("totalPages", pageUsers.getTotalPages());
             if (pageUsers != null) {
                 users = pageUsers.getContent();
-                response.put("currentPage", pageUsers.getNumber());
-                response.put("totalItems", pageUsers.getTotalElements());
-                response.put("totalPages", pageUsers.getTotalPages());
+                response.put("users", users);
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
             }
-            response.put("users", users);
 
-            return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -63,54 +68,8 @@ public class UserController {
         }
     }
 
-    @GetMapping(value = {"/users/{userId}/slides", "/users/{userId}/slides/{slideId}"})
-    public ResponseEntity<Map<String, Object>> findOneUserSlides(@PathVariable Long userId,
-                                                                 @PathVariable(required = false) Long slideId,
-                                                                 @RequestParam(defaultValue = "0") int page,
-                                                                 @RequestParam(defaultValue = "3") int size) {
-        try {
-            Pageable paging = PageRequest.of(page, size);
-            List<Slide> slides = null;
-            Page<Slide> pageSlides = null;
-            if (userId != null && slideId != null) {
-                Optional<Slide> slide;
-                slide = slideService.findSlideByUserIdAndSlideId(userId, slideId);
-                if(slide.isPresent()){
-                    slides = new ArrayList<>();
-                    slides.add(slide.get());
-                }
-
-            } else if(userId != null) {
-                pageSlides = slideService.findAllSlideByUserId(userId, paging);
-            }
-
-            Map<String, Object> response = new HashMap<>();
-            if (pageSlides != null) {
-                slides = pageSlides.getContent();
-                response.put("currentPage", pageSlides.getNumber());
-                response.put("totalItems", pageSlides.getTotalElements());
-                response.put("totalPages", pageSlides.getTotalPages());
-            }
-            response.put("slides", slides);
-
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @PostMapping("/user")
-    public ResponseEntity<User> addOneUser(@RequestBody User user) {
-        try {
-            User _user = userService.insert(user);
-            return new ResponseEntity<>(_user, HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    //for testPurpose
-    @PostMapping("/users")
+    //Only for test purpose
+    /*@PostMapping("/users")
     public ResponseEntity<List<User>> addBulkUser(@RequestBody List<User> users) {
         try {
             List<User> _users = userService.insertAll(users);
@@ -122,5 +81,5 @@ public class UserController {
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-    }
+    }*/
 }

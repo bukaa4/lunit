@@ -7,11 +7,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface UserRepository extends JpaRepository<User, Long> {
+import java.util.Optional;
 
-   /* @Query("SELECT u FROM User u WHERE u.email = ?1")
-    Page<User> findAllUsersWithEmail(String email, Pageable pageable);
-*/
-    @Query("SELECT u FROM User u WHERE u.email = :email")
-    Page<User> findAllUsersWithEmail(@Param("email") String email, Pageable pageable);
+public interface UserRepository extends JpaRepository<User, Long> {
+    @Query("SELECT u FROM User u WHERE u.username = :username")
+    Page<User> findAllUsersWithUsername(@Param("username") String username, Pageable pageable);
+    @Query("SELECT u FROM User u WHERE u.username = :username")
+    Optional<User> findUserByUsername(@Param("username") String username);
 }

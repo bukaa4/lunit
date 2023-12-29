@@ -11,7 +11,7 @@ public interface SlideService {
     Page<Slide> findAllSlide(Pageable pageable);
 
     Page<Slide> findAllSlideByUserId(Long userId, Pageable pageable);
-    Optional<Slide> findById(Long id);
+    Page<Slide> findCompletedSlideByUserIdAndSlideId(Long userId, Pageable pageable);
     Optional<Slide> findSlideByUserIdAndSlideId(Long userId, Long slideId);
     Slide insert(Slide slide);
     List<Slide> insertAll(List<Slide> slides);

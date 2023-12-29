@@ -14,7 +14,7 @@ import java.util.Optional;
 public class UserServiceImpl implements  UserService {
     @Autowired
     private UserRepository userRepository;
-
+    //TODO: check DB errors
     @Override
     public Page<User> findAllUser(Pageable pageable) { //public Iterable<User> findAllUsers() {
         return this.userRepository.findAll(pageable);
@@ -36,19 +36,16 @@ public class UserServiceImpl implements  UserService {
     }
 
     @Override
-    public void deleteById(Long id) {
-
-        //TODO:findONe and delet
-        this.userRepository.deleteById(id);
-    }
-
-    @Override
     public User update(User user) {
         return this.userRepository.save(user);
     }
 
     @Override
-    public Page<User> findAllUsersWithEmail(String email, Pageable pageable) {
-        return this.userRepository.findAllUsersWithEmail(email, pageable);
+    public Page<User> findAllUsersWithUsername(String username, Pageable pageable) {
+        return this.userRepository.findAllUsersWithUsername(username, pageable);
+    }
+    @Override
+    public Optional<User> findUserByUsername(String username) {
+        return this.userRepository.findUserByUsername(username);
     }
 }

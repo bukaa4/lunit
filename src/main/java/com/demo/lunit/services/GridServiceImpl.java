@@ -16,13 +16,18 @@ public class GridServiceImpl implements GridService {
     private GridRepository gridRepository;
 
     @Override
-    public Page<Grid> findAllGrid(Pageable pageable) { //public Iterable<Grid> findAllGrids() {
-        return this.gridRepository.findAll(pageable);
+    public Page<Grid> findAllGridsByUserId(Long userId, Pageable pageable) { //public Iterable<Grid> findAllGrids() {
+        return this.gridRepository.findAllGridsByUserId(userId, pageable);
     }
 
     @Override
-    public Optional<Grid> findById(Long id) {
-        return this.gridRepository.findById(id);
+    public Page<Grid> findAllGridsByUserIdAndSlideId(Long userId, Long slideId, Pageable pageable) {
+        return this.gridRepository.findAllGridsByUserIdAndSlideId(userId, slideId, pageable);
+    }
+
+    @Override
+    public Optional<Grid> findSlideByUserIdAndGridId(Long userId, Long gridId) {
+        return this.gridRepository.findSlideByUserIdAndGridId(userId, gridId);
     }
 
     @Override
@@ -43,5 +48,9 @@ public class GridServiceImpl implements GridService {
     @Override
     public Grid update(Grid grid) {
         return this.gridRepository.save(grid);
+    }
+
+    public Page<Grid> findAllGrid(Pageable pageable){
+        return this.gridRepository.findAll(pageable);
     }
 }

@@ -8,10 +8,15 @@ import java.util.List;
 import java.util.Optional;
 
 public interface GridService {
-    Page<Grid> findAllGrid(Pageable pageable);
-    Optional<Grid> findById(Long id);
+    Page<Grid> findAllGridsByUserId(Long userId, Pageable pageable);
+
+    Page<Grid> findAllGridsByUserIdAndSlideId(Long userId, Long slideId, Pageable pageable);
+
+    Optional<Grid> findSlideByUserIdAndGridId(Long userId, Long gridId);
     Grid insert(Grid grid);
     List<Grid> insertAll(List<Grid> grids);
     void deleteById(Long id);
     Grid update(Grid grid);
+
+    Page<Grid> findAllGrid(Pageable pageable);
 }

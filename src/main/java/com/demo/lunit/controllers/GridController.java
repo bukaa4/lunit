@@ -21,32 +21,42 @@ public class GridController {
     @Autowired
     private GridService gridService;
 
-    @GetMapping("/grids")
-    public ResponseEntity<Map<String, Object>> findAllGrids(@RequestParam(defaultValue = "0") int page,
+    @GetMapping("users/{userId}/grids")
+    public ResponseEntity<Map<String, Object>> findAllGrids(@PathVariable Long userId,
+                                                            @RequestParam(required = false) Long slideId,
+                                                            @RequestParam(defaultValue = "0") int page,
                                                             @RequestParam(defaultValue = "3") int size) {
+        Page<Grid> pageGrids = null;
+        //TODO: check userId
         try {
             Pageable paging = PageRequest.of(page, size);
             List<Grid> grids = null;
-            Page<Grid> pageGrids = gridService.findAllGrid(paging);
-
-            Map<String, Object> response = new HashMap<>();
-            if (pageGrids != null) {
-                grids = pageGrids.getContent();
-                response.put("currentPage", pageGrids.getNumber());
-                response.put("totalItems", pageGrids.getTotalElements());
-                response.put("totalPages", pageGrids.getTotalPages());
+            if(slideId != null ){
+                pageGrids = gridService.findAllGridsByUserIdAndSlideId(userId, slideId, paging);
+            } else {
+                pageGrids = gridService.findAllGridsByUserId(userId, paging);
             }
-            response.put("grids", grids);
+            Map<String, Object> response = new HashMap<>();
+            response.put("currentPage", pageGrids.getNumber());
+            response.put("totalItems", pageGrids.getTotalElements());
+            response.put("totalPages", pageGrids.getTotalPages());
+            if (!pageGrids.isEmpty()) {
+                grids = pageGrids.getContent();
+                response.put("grids", grids);
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            }
 
-            return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @GetMapping("/grids/{id}")
-    public ResponseEntity<Grid> findOneGrid(@PathVariable Long id) {
-        Optional<Grid> gridData = gridService.findById(id);
+    @GetMapping("users/{userId}/grids/{gridId}")
+    public ResponseEntity<Grid> getOneGridOfUser(@PathVariable Long userId,
+                                                @PathVariable Long gridId) {
+        Optional<Grid> gridData = gridService.findSlideByUserIdAndGridId(userId, gridId);
 
 		if (gridData.isPresent()) {
 			return new ResponseEntity<>(gridData.get(), HttpStatus.OK);
@@ -55,13 +65,31 @@ public class GridController {
 		}
     }
 
-   /* @PostMapping("/grid")
-    public Grid addOneGrid(@RequestBody Grid grid) {
-        return gridService.insert(grid);
-    }
+    //Only for test purpose
+   /* @GetMapping("/grids")
+    public ResponseEntity<Object> getAllGridsForTest(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "3") int size) {
+        try {
+            Pageable paging = PageRequest.of(page, size);
+            Page<Grid> gridData = gridService.findAllGrid(paging);
+            List<Grid> grids = null;
+            //gridData.getContent().forEach(System.out::println);
 
-    @PostMapping("/grids")
-    public List<Grid> addBulkGrid(@RequestBody List<Grid> grids) {
-        return gridService.insertAll(grids);
+            Map<String, Object> response = new HashMap<>();
+            response.put("currentPage", gridData.getNumber());
+            response.put("totalItems", gridData.getTotalElements());
+            response.put("totalPages", gridData.getTotalPages());
+
+            if (!gridData.getContent().isEmpty()) {
+                grids = gridData.getContent();
+                response.put("grids", grids);
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }*/
 }
