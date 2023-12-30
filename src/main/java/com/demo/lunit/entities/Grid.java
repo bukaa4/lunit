@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 public class Grid {
     @Id
     @Column(name="id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name="intratumoral_min")

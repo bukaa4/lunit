@@ -16,7 +16,5 @@ public interface UserService {
     User insert(User user);
     List<User> insertAll(List<User> users);
     User update(User user);
-    Page<User> findAllUsersWithUsername(String email, Pageable pageable);
-
     Optional<User> findUserByUsername(String username);
 }

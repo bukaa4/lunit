@@ -1,6 +1,8 @@
 package com.demo.lunit.services;
 
 import com.demo.lunit.entities.Grid;
+import com.demo.lunit.exceptions.DbException;
+import com.demo.lunit.exceptions.GridNotFoundException;
 import com.demo.lunit.respositories.GridRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,41 +18,108 @@ public class GridServiceImpl implements GridService {
     private GridRepository gridRepository;
 
     @Override
-    public Page<Grid> findAllGridsByUserId(Long userId, Pageable pageable) { //public Iterable<Grid> findAllGrids() {
-        return this.gridRepository.findAllGridsByUserId(userId, pageable);
+    public Page<Grid> findAllGridsByUserId(Long userId, Pageable pageable) {
+        try {
+            Page<Grid> gridPages = this.gridRepository.findAllGridsByUserId(userId, pageable);
+            if(gridPages.getContent().isEmpty()){
+                throw new GridNotFoundException("Grid not found.");
+            } else {
+                return gridPages;
+            }
+        } catch (DbException e) {
+            throw new DbException("Database error: " + e);
+        }
     }
 
     @Override
     public Page<Grid> findAllGridsByUserIdAndSlideId(Long userId, Long slideId, Pageable pageable) {
-        return this.gridRepository.findAllGridsByUserIdAndSlideId(userId, slideId, pageable);
+        try {
+            Page<Grid> gridPages = this.gridRepository.findAllGridsByUserIdAndSlideId(userId, slideId, pageable);
+            if(gridPages.getContent().isEmpty()){
+                throw new GridNotFoundException("Grid not found.");
+            } else {
+                return gridPages;
+            }
+        } catch (DbException e) {
+            throw new DbException("Database error: " + e);
+        }
     }
 
     @Override
     public Optional<Grid> findSlideByUserIdAndGridId(Long userId, Long gridId) {
-        return this.gridRepository.findSlideByUserIdAndGridId(userId, gridId);
+        try {
+            Optional<Grid> grid = this.gridRepository.findSlideByUserIdAndGridId(userId, gridId);
+            if(grid.isPresent()){
+                return grid;
+            } else {
+                throw new GridNotFoundException("Grid not found.");
+            }
+        } catch (DbException e) {
+            throw new DbException("Database error: " + e);
+        }
     }
 
     @Override
     public Grid insert(Grid grid) {
-        return this.gridRepository.save(grid);
+        try {
+            Grid _grid = this.gridRepository.save(grid);
+            if(_grid != null) {
+                return _grid;
+            } else {
+                throw new GridNotFoundException("Grid not found.");
+            }
+        } catch (DbException e) {
+            throw new DbException("Database error: " + e);
+        }
     }
 
     @Override
     public List<Grid> insertAll(List<Grid> grids) {
-        return this.gridRepository.saveAll(grids);
+        try {
+            List<Grid> _grids = this.gridRepository.saveAll(grids);
+            if(_grids.size() > 0) {
+                return _grids;
+            } else {
+                throw new GridNotFoundException("Grid not found.");
+            }
+        } catch (DbException e) {
+            throw new DbException("Database error: " + e);
+        }
     }
 
     @Override
     public void deleteById(Long id) {
-        this.gridRepository.deleteById(id);
+        try {
+            this.gridRepository.deleteById(id);
+        } catch (DbException e) {
+            throw new DbException("Database error: " + e);
+        }
     }
 
     @Override
     public Grid update(Grid grid) {
-        return this.gridRepository.save(grid);
+        try {
+            Grid _grid = this.gridRepository.save(grid);
+            if(_grid != null) {
+                return _grid;
+            } else {
+                throw new GridNotFoundException("Grid not found.");
+            }
+        } catch (DbException e) {
+            throw new DbException("Database error: " + e);
+        }
     }
 
     public Page<Grid> findAllGrid(Pageable pageable){
-        return this.gridRepository.findAll(pageable);
+        try {
+            Page<Grid> gridPages = this.gridRepository.findAll(pageable);
+            if(gridPages.getContent().isEmpty()){
+                throw new GridNotFoundException("Grid not found.");
+            } else {
+                return gridPages;
+            }
+        } catch (DbException e) {
+            throw new DbException("Database error: " + e);
+        }
     }
 }

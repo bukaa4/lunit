@@ -3,6 +3,10 @@ package com.demo.lunit.clients;
 import com.demo.lunit.entities.Grid;
 import com.demo.lunit.entities.Slide;
 import com.demo.lunit.entities.Status;
+import com.demo.lunit.exceptions.DbException;
+import com.demo.lunit.exceptions.GridNotFoundException;
+import com.demo.lunit.exceptions.InvalidRequestException;
+import com.demo.lunit.exceptions.SlideNotFoundException;
 import com.demo.lunit.services.GridService;
 import com.demo.lunit.services.SlideService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +15,6 @@ import org.springframework.stereotype.Controller;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 @Controller
 public class AiClient {
@@ -27,7 +30,6 @@ public class AiClient {
 
         slides.forEach(slide -> {
             if (slide != null && slide.getId() != null && slide.getStatus() == Status.NONE) {
-                //TODO: check slide is process again or not
                 result.add(createSampleGridsForSlide(slide, userId));
             }
         });
@@ -46,17 +48,27 @@ public class AiClient {
                 new Grid(7l, 7.9, 69.99, 87.8, 77.3, 39.5, 634.9, userId, slide.getId()),
                 new Grid(8l, 8.9, 79.99, 88.8, 87.3, 39.5, 734.9, userId, slide.getId())
         };
-        List<Grid> grids = new ArrayList<>(Arrays.asList(gridData));
-        List<Grid> _grids = gridService.insertAll(grids);
+        try {
+            List<Grid> grids = new ArrayList<>(Arrays.asList(gridData));
+            List<Grid> _grids = gridService.insertAll(grids);
 
-        //Set slideStatus as COMPLETED for not processing again
-        //Set values of AI result (decision, score)
-        slide.setStatus(Status.COMPLETED);
-        slide.setDecision(1);
-        slide.setScore(86.0);
-        slide.setUserId(userId);
-        Slide _slide = slideService.update(slide);
-        //grids.forEach(System.out::println);
-        return _grids;
+            //Set slideStatus as COMPLETED for not processing again
+            //Set values of AI result (decision, score)
+            slide.setStatus(Status.COMPLETED);
+            slide.setDecision(1);
+            slide.setScore(86.0);
+            slide.setIsProcessed(Boolean.TRUE);
+            slide.setUserId(userId);
+            Slide _slide = slideService.update(slide);
+            return _grids;
+        } catch (GridNotFoundException e) {
+            throw new GridNotFoundException("Grid not found.");
+        } catch (SlideNotFoundException e) {
+            throw new SlideNotFoundException("Slide not found.");
+        } catch (DbException dbException) {
+            throw new DbException("Database is failed.");
+        } catch (Exception ex) {
+            throw new InvalidRequestException("Invalid request.");
+        }
     }
 }

@@ -1,6 +1,8 @@
 package com.demo.lunit.services;
 
 import com.demo.lunit.entities.Slide;
+import com.demo.lunit.exceptions.DbException;
+import com.demo.lunit.exceptions.SlideNotFoundException;
 import com.demo.lunit.respositories.SlideRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -18,55 +20,98 @@ public class SlideServiceImpl implements  SlideService {
 
     @Override
     public Page<Slide> findAllSlide(Pageable pageable) {
-        return this.slideRepository.findAll(pageable);
+        try {
+            Page<Slide> slidePages = this.slideRepository.findAll(pageable);
+            if(slidePages.getContent().isEmpty()){
+                throw new SlideNotFoundException("Slide not found.");
+            } else {
+                return slidePages;
+            }
+        } catch (DbException e) {
+            throw new DbException("Database error: " + e);
+        }
     }
 
     @Override
     public Page<Slide> findAllSlideByUserId(Long userId, Pageable pageable) {
-        return this.slideRepository.findAllSlidesByUserId(userId, pageable);
+        try {
+            Page<Slide> slidePages = this.slideRepository.findAllSlidesByUserId(userId, pageable);
+            if(slidePages.getContent().isEmpty()){
+                throw new SlideNotFoundException("Slide not found.");
+            } else {
+                return slidePages;
+            }
+        } catch (DbException e) {
+            throw new DbException("Database error: " + e);
+        }
     }
 
     @Override
     public Page<Slide> findCompletedSlideByUserIdAndSlideId(Long userId, Pageable pageable) {
-        return this.slideRepository.findCompletedSlideByUserIdAndSlideId(userId, pageable);
+        try {
+            Page<Slide> slidePages = this.slideRepository.findCompletedSlideByUserIdAndSlideId(userId, pageable);
+            if(slidePages.getContent().isEmpty()){
+                throw new SlideNotFoundException("Slide not found.");
+            } else {
+                return slidePages;
+            }
+        } catch (DbException e) {
+            throw new DbException("Database error: " + e);
+        }
     }
 
     @Override
     public Optional<Slide> findSlideByUserIdAndSlideId(Long userId, Long slideId) {
-        return this.slideRepository.findSlideByUserIdAndSlideId(userId, slideId);
+        try {
+            Optional<Slide> slide = this.slideRepository.findSlideByUserIdAndSlideId(userId, slideId);
+            if(slide.isPresent()){
+                return slide;
+            } else {
+                throw new SlideNotFoundException("Slide not found.");
+            }
+        } catch (DbException e) {
+            throw new DbException("Database error: " + e);
+        }
     }
 
     @Override
     public Slide insert(Slide slide) {
-        return this.slideRepository.save(slide);
+        try {
+            return this.slideRepository.save(slide);
+        } catch (DbException e) {
+            throw new DbException("Database error: " + e);
+        }
     }
 
     @Override
     public List<Slide> insertAll(List<Slide> slides) {
-        return this.slideRepository.saveAll(slides);
+        try {
+            List<Slide> _slides = this.slideRepository.saveAll(slides);
+            if(_slides.size() > 0) {
+                return _slides;
+            } else {
+                throw new SlideNotFoundException("Slide not found.");
+            }
+        } catch (DbException e) {
+            throw new DbException("Database error: " + e);
+        }
     }
 
     @Override
     public void deleteById(Long id) {
-        this.slideRepository.deleteById(id);
+        try {
+            this.slideRepository.deleteById(id);
+        } catch (DbException e) {
+            throw new DbException("Database error: " + e);
+        }
     }
 
     @Override
     public Slide update(Slide slide) {
-        return this.slideRepository.save(slide);
-
-        /* Optional<Slide> slideFromDb = slideRepository.findById(slide.getId());
-
-        slideFromDb.get().setName(slide.getName());
-        slideFromDb.get().setIsProcessed(slide.getIsProcessed());
-        slideFromDb.get().setStatus(slide.getStatus());
-        slideFromDb.get().setDecision(slide.getDecision());
-        slideFromDb.get().setScore(slide.getScore());
-        slideFromDb.get().setDescription(slide.getDescription());
-        slideFromDb.get().setFormat(slide.getFormat());
-        slideFromDb.get().setLicense(slide.getLicense());
-        slideFromDb.get().setSize(slide.getSize());
-        slideFromDb.get().setSha256(slide.getSha256());
-        slideFromDb.get().setUserId(slide.getUserId()); */
+        try {
+            return this.slideRepository.save(slide);
+        } catch (DbException e) {
+            throw new DbException("Database error: " + e);
+        }
     }
 }
