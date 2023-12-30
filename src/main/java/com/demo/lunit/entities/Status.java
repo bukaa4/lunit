@@ -1,5 +1,5 @@
 package com.demo.lunit.entities;
 
 public enum Status {
-    COMPLETED, PENDING, FAILED
+    NONE, PENDING, COMPLETED, FAILED
 }

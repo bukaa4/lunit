@@ -1,23 +1,25 @@
 package com.demo.lunit.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
-@Getter
-@Setter
 @Table(name = "slides")
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Slide {
     @Id
     @Column(name="id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name="title")
-    private String title;
+    @Column(name="name")
+    private String name;
 
     @Column(name="processed")
     private Boolean isProcessed;
@@ -29,5 +31,25 @@ public class Slide {
     private Integer decision;
 
     @Column(name="score")
-    private Float score;
+    private Double score;
+
+    @Column(name="description")
+    private String description;
+
+    @Column(name="format")
+    private String format;
+
+    @Column(name="license")
+    private String license;
+
+    @Column(name="size")
+    private Long size;
+
+    @Column(name="sha256")
+    private String sha256;
+
+    @Column(name = "user_id")
+    private Long userId;
+
+   // private List<Grid> grids;
 }

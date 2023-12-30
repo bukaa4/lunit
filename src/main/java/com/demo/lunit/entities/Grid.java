@@ -1,40 +1,44 @@
 package com.demo.lunit.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
-@Getter
-@Setter
 @Table(name = "grids")
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Grid {
     @Id
     @Column(name="id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    //fileID FK
-    @Column(name="file_id")
-    private Long fileId;
-
     @Column(name="intratumoral_min")
-    private Float intratumoralMin;
+    private Double intratumoralMin;
 
     @Column(name="intratumoral_avg")
-    private Float intratumoralAvg;
+    private Double intratumoralAvg;
 
     @Column(name="intratumoral_max")
-    private Float intratumoralMax;
+    private Double intratumoralMax;
 
     @Column(name="stromal_min")
-    private Float stromalMin;
+    private Double stromalMin;
 
     @Column(name="stromal_avg")
-    private Float stromalAvg;
+    private Double stromalAvg;
 
     @Column(name="stromal_max")
-    private Float stromalMax;
+    private Double stromalMax;
+
+    @Column(name="user_id")
+    private Long userId;
+
+    @Column(name="slide_id")
+    private Long slideId;
 }
