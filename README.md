@@ -7,6 +7,8 @@ Test project for Lunit Assignment
 * H2 In-memory DB
 
 ### APIs
+/swagger-ui/index.html - Swagger Documentation
+
 #### Home
 * /v1/register
 * /v1/login
