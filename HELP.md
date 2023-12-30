@@ -1,19 +1,30 @@
 # Getting Started
 
 ### Reference Documentation
-For further reference, please consider the following sections:
+Test project for Lunit Assignment
+* Maven project
+* Openjdk 18
+* H2 In-memory DB
 
-* [Official Apache Maven documentation](https://maven.apache.org/guides/index.html)
-* [Spring Boot Maven Plugin Reference Guide](https://docs.spring.io/spring-boot/docs/3.2.1/maven-plugin/reference/html/)
-* [Create an OCI image](https://docs.spring.io/spring-boot/docs/3.2.1/maven-plugin/reference/html/#build-image)
-* [Spring Data JPA](https://docs.spring.io/spring-boot/docs/3.2.1/reference/htmlsingle/index.html#data.sql.jpa-and-spring-data)
-* [Spring Web](https://docs.spring.io/spring-boot/docs/3.2.1/reference/htmlsingle/index.html#web)
+### APIs
+#### Home
+* /v1/register
+* /v1/login
+  
+#### User related
+* /v1/users
+* /v1/users/{id}
 
-### Guides
-The following guides illustrate how to use some features concretely:
+#### Slide related
+* /v1/users/{userid}/slides/getAnalysis
+* /v1/users/{userId}/slides/upload
+* /v1/users/{userId}/slides
+* /v1/users/{userId}/slides/requestHistory
 
-* [Accessing Data with JPA](https://spring.io/guides/gs/accessing-data-jpa/)
-* [Building a RESTful Web Service](https://spring.io/guides/gs/rest-service/)
-* [Serving Web Content with Spring MVC](https://spring.io/guides/gs/serving-web-content/)
-* [Building REST services with Spring](https://spring.io/guides/tutorials/rest/)
+#### Grid related
+* /v1/users/{userId}/grids
+* /v1/users/{userId}/grids/{gridId}
+
+### Docker image
+* docker push bgalbadrakh4/lunit-service:tagname
 
